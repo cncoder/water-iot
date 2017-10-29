@@ -19,13 +19,17 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
 import logging
 import time
 import argparse
+import sensordata
+import json
 
 # Input your credentials for authentication
-endpoint = "endPoint"
-rootCAPath = "rootCAPath"
-certificatePath = "certificatePath"
-privateKeyPath = "privateKeyPath"
-topic = "topic"
+endpoint = "##.iot.us-west-2.amazonaws.com"
+rootCAPath = "cert/rootCA.cert"
+certificatePath = "cert/certificate.pem"
+privateKeyPath = "cert/private.pem.key"
+
+clientId = "myClientID"
+topic = "sensor/data"
 
 # General message notification callback
 def customOnMessage(message):
@@ -52,30 +56,21 @@ def customPubackCallback(mid):
     print("++++++++++++++\n\n")
 
 # For certificate based connection
-myMQTTClient = AWSIoTMQTTClient("myClientID")
+#myMQTTClient = AWSIoTMQTTClient(clientId)
 # For Websocket connection
 # myMQTTClient = AWSIoTMQTTClient("myClientID", useWebsocket=True)
 # Configurations
 # For TLS mutual authentication
-myMQTTClient.configureEndpoint("YOUR.ENDPOINT", 8883)
+#myMQTTClient.configureEndpoint(endpoint, 8883)
 # For Websocket
 # myMQTTClient.configureEndpoint("YOUR.ENDPOINT", 443)
-myMQTTClient.configureCredentials("YOUR/ROOT/CA/PATH", "PRIVATE/KEY/PATH", "CERTIFICATE/PATH")
+#myMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
 # For Websocket, we only need to configure the root CA
 # myMQTTClient.configureCredentials("YOUR/ROOT/CA/PATH")
-myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
-myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
-myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
-myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
-
-
-if args.useWebsocket and args.certificatePath and args.privateKeyPath:
-    parser.error("X.509 cert authentication and WebSocket are mutual exclusive. Please pick one.")
-    exit(2)
-
-if not args.useWebsocket and (not args.certificatePath or not args.privateKeyPath):
-    parser.error("Missing credentials for authentication.")
-    exit(2)
+#myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
+#myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
+#myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
+#myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
 
 # Configure logging
 logger = logging.getLogger("AWSIoTPythonSDK.core")
@@ -85,16 +80,9 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 streamHandler.setFormatter(formatter)
 logger.addHandler(streamHandler)
 
-# Init AWSIoTMQTTClient
-myAWSIoTMQTTClient = None
-if useWebsocket:
-    myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId, useWebsocket=True)
-    myAWSIoTMQTTClient.configureEndpoint(host, 443)
-    myAWSIoTMQTTClient.configureCredentials(rootCAPath)
-else:
-    myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
-    myAWSIoTMQTTClient.configureEndpoint(host, 8883)
-    myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
+myAWSIoTMQTTClient = AWSIoTMQTTClient(clientId)
+myAWSIoTMQTTClient.configureEndpoint(endpoint, 8883)
+myAWSIoTMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
 
 # AWSIoTMQTTClient connection configuration
 myAWSIoTMQTTClient.configureAutoReconnectBackoffTime(1, 32, 20)
@@ -108,11 +96,12 @@ myAWSIoTMQTTClient.onMessage = customOnMessage
 myAWSIoTMQTTClient.connect()
 # Note that we are not putting a message callback here. We are using the general message notification callback.
 myAWSIoTMQTTClient.subscribeAsync(topic, 1, ackCallback=customSubackCallback)
-time.sleep(2)
 
 # Publish to the same topic in a loop forever
 loopCount = 0
 while True:
-    myAWSIoTMQTTClient.publishAsync(topic, "New Message " + str(loopCount), 1, ackCallback=customPubackCallback)
+    senData = sensordata.getSensorData()
+    print("temp =", senData["temp"])
+    myAWSIoTMQTTClient.publishAsync(topic, json.dumps(senData), 1, ackCallback=customPubackCallback)
     loopCount += 1
     time.sleep(1)

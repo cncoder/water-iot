@@ -94,35 +94,42 @@ def setText_norefresh(text):
         count += 1
         bus.write_byte_data(DISPLAY_TEXT_ADDR,0x40,ord(c))
 
-while True:
-    try:
-        # temp
-        temp = grovepi.temp(tempsensor,'1.1')
-        print("temp =", temp)
-        temp = float('%.1f' %(temp))
+# Get all sensor data, and return sensordata['temp'],['mois'],['light']
+def getSensorData():
+    while True:
+        sensordata = {}
+        try:
+            # temp
+            temp = grovepi.temp(tempsensor,'1.1')
+            #print("temp =", temp)
+            temp = float('%.1f' %(temp))
+            sensordata["temp"] = temp
 
-        #Moisture
-        moisture = grovepi.analogRead(moisturesensor)
-        print(moisture)
-        # Get grovepi sensor value
-        sensor_value = grovepi.analogRead(light_sensor)
+            #Moisture
+            moisture = grovepi.analogRead(moisturesensor)
+            #print(moisture)
+            sensordata["mois"] = moisture
+            # Get grovepi sensor value
+            sensor_value = grovepi.analogRead(light_sensor)
+            sensordata["light"] = sensor_value
 
-        # Calculate resistance of sensor in K
-        resistance = (float)(1023 - sensor_value) * 10 / sensor_value
+            # Calculate resistance of sensor in K
+            resistance = (float)(1023 - sensor_value) * 10 / sensor_value
 
-        if moisture > 1:
-            grovepi.analogWrite(mosfet,255)
-            print ("full speed")
-        else:
-            grovepi.analogWrite(mosfet,0)
-            print ("off")
+            if moisture > 1:
+                grovepi.analogWrite(mosfet,255)
+                print ("full speed")
+            else:
+                grovepi.analogWrite(mosfet,0)
+                print ("off")
 
-        print("sensor_value = %d resistance =%.2f" %(sensor_value,  resistance))
-        #setText("Temp  Mois light\n%.2f  %d    %d" %(temp, moisture, sensor_value))
-        setText_norefresh("Temp  Mois light{}   {}   {}".format(str(temp),str(moisture),str(sensor_value)))
-        time.sleep(.5)
+            print("sensor_value = %d resistance =%.2f" %(sensor_value,  resistance))
+            #setText("Temp  Mois light\n%.2f  %d    %d" %(temp, moisture, sensor_value))
+            setText_norefresh("Temp  Mois light{}   {}   {}".format(str(temp),str(moisture),str(sensor_value)))
+            #time.sleep(.5)
+            return sensordata
 
-    except KeyboardInterrupt:
-        break
-    except IOError:
-        print ("Error")
+        except KeyboardInterrupt:
+            break
+        except IOError:
+            print ("Error")

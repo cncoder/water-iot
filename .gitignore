@@ -11,5 +11,9 @@ db.ini
 deploy_key_rsa
 
 #credentials
+cert
 *.key
 *.cert
+*.config
+*.pem
+*.crt
