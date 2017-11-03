@@ -16,6 +16,7 @@
  '''
 
 from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTClient
+from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import logging
 import time
 import argparse
@@ -23,7 +24,7 @@ import sensordata
 import json
 
 # Input your credentials for authentication
-endpoint = "##.iot.us-west-2.amazonaws.com"
+endpoint = "a3pdhldqghzkjq.iot.us-west-2.amazonaws.com"
 rootCAPath = "cert/rootCA.cert"
 certificatePath = "cert/certificate.pem"
 privateKeyPath = "cert/private.pem.key"
@@ -55,23 +56,6 @@ def customPubackCallback(mid):
     print(mid)
     print("++++++++++++++\n\n")
 
-# For certificate based connection
-#myMQTTClient = AWSIoTMQTTClient(clientId)
-# For Websocket connection
-# myMQTTClient = AWSIoTMQTTClient("myClientID", useWebsocket=True)
-# Configurations
-# For TLS mutual authentication
-#myMQTTClient.configureEndpoint(endpoint, 8883)
-# For Websocket
-# myMQTTClient.configureEndpoint("YOUR.ENDPOINT", 443)
-#myMQTTClient.configureCredentials(rootCAPath, privateKeyPath, certificatePath)
-# For Websocket, we only need to configure the root CA
-# myMQTTClient.configureCredentials("YOUR/ROOT/CA/PATH")
-#myMQTTClient.configureOfflinePublishQueueing(-1)  # Infinite offline Publish queueing
-#myMQTTClient.configureDrainingFrequency(2)  # Draining: 2 Hz
-#myMQTTClient.configureConnectDisconnectTimeout(10)  # 10 sec
-#myMQTTClient.configureMQTTOperationTimeout(5)  # 5 sec
-
 # Configure logging
 logger = logging.getLogger("AWSIoTPythonSDK.core")
 logger.setLevel(logging.DEBUG)
@@ -98,10 +82,10 @@ myAWSIoTMQTTClient.connect()
 myAWSIoTMQTTClient.subscribeAsync(topic, 1, ackCallback=customSubackCallback)
 
 # Publish to the same topic in a loop forever
-loopCount = 0
+
 while True:
     senData = sensordata.getSensorData()
     print("temp =", senData["temp"])
+    myAWSIoTMQTTClient.publishAsync('$aws/things/waterflower/shadow/update',json.dumps(senData), 1, ackCallback=customPubackCallback)
     myAWSIoTMQTTClient.publishAsync(topic, json.dumps(senData), 1, ackCallback=customPubackCallback)
-    loopCount += 1
     time.sleep(1)
