@@ -53,11 +53,13 @@ privateKeyPath = "cert/private.pem.key"
 
 thingName = "waterflower"
 
-if your don't want to report error with wechat, you must set the **senderror.py** file:
+```
+
+### If your don't want to report error with wechat, you must set the **senderror.py** file:
     > reporter = true
     & change WECHAT_URL with https://sc.ftqq.com/3.version
 
-```
+
 
 ### Main function:
 
