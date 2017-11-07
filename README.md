@@ -36,11 +36,16 @@ And then reboot the raspberry
 > git clone git@github.com:cncoder/water-iot.git
 
 ### Input your credentials for authentication(ThinsShadowEcho.py)
-endpoint = "XXXX.iot.XXXX.amazonaws.com" (BJS will be diff)
-rootCAPath = "cert/rootCA.cert"
-certificatePath = "cert/certificate.pem"
-privateKeyPath = "cert/private.pem.key"
-thingName = "waterflower"
+
+> endpoint = "XXXX.iot.XXXX.amazonaws.com" (BJS will be diff)
+
+> rootCAPath = "cert/rootCA.cert"
+
+> certificatePath = "cert/certificate.pem"
+
+> privateKeyPath = "cert/private.pem.key"
+
+> thingName = "waterflower"
 
 if your don't want to report error with wechat, you must set the **senderror.py** file:
     > reporter = true
