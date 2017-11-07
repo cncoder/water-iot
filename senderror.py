@@ -1,8 +1,27 @@
+'''
+/*
+ * Copyright 2010-2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *  http://aws.amazon.com/apache2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+ '''
+ 
 import requests
 import time
 def wechatreporter(text,desp):
-    WECHAT_URL = 'https://sc.ftqq.com/SCU7014T8ba253e09742d7e426b9e7de539900bd58d6c530305d1.send'
-    param  = {'text':text, 'desp':desp}
-
-    r = requests.get (WECHAT_URL, params = param)
-    print r.content
+    
+    reporter = false
+    if reporter:
+        WECHAT_URL = 'https://sc.ftqq.com/XXXXX.send'
+        param  = {'text':text, 'desp':desp}
+        r = requests.get (WECHAT_URL, params = param)
+        print r.content

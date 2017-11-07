@@ -23,6 +23,8 @@ import json
 import sensordata
 import grovepi
 import powerctl
+import setLcdinit
+import LcdBadDevice
 
 # Connect the Grove RELAY to analog port D6
 # SIG,NC,VCC,GND
@@ -69,7 +71,7 @@ def getShadowCallback(client, userdata, message):
     print(message)
 
 # Input your credentials for authentication
-endpoint = "a3pdhldqghzkjq.iot.us-west-2.amazonaws.com"
+endpoint = "XXXXX.iot.XXXXX.amazonaws.com"
 rootCAPath = "cert/rootCA.cert"
 certificatePath = "cert/certificate.pem"
 privateKeyPath = "cert/private.pem.key"
@@ -164,7 +166,11 @@ while True:
     try:
         senData = {}
         senData["state"] = {}
-        senData["state"]["reported"] = sensordata.getSensorData()
+        senData["state"]["reported"] = {}
+        tempData = sensordata.getSensorData()
+        senData["state"]["reported"]['mois'] = tempData['mois']
+        senData["state"]["reported"]['temp'] = tempData['temp']
+        senData["state"]["reported"]['light'] = tempData['light']
         #print(">>>>>>>>>>")
         #print(senData)
         #senData["state"]["reported"]["status"] = "off"
@@ -173,7 +179,7 @@ while True:
         if new_threshold !=30:
             status = powerctl.ctl(senData["state"]["reported"]['mois'],new_threshold)
         else:
-            senData["state"]["reported"]['threshould'] = 30
+            senData["state"]["reported"]['threshould'] = new_threshold
             print("init-threshould"+str('30'))
             status = powerctl.ctl(senData["state"]["reported"]['mois'],30)
 
@@ -181,11 +187,18 @@ while True:
         deviceShadowHandler.shadowUpdate(json.dumps(senData), customCallback, 5)
 
         myAWSIoTMQTTClient.publishAsync(topic, json.dumps(senData), 1, ackCallback=customPubackCallback)
-        time.sleep(.5)
+        time.sleep(2)
 
     except KeyboardInterrupt:
+        print("key interrput")
         break
     except IOError:
         print ("Error")
+    except TypeError, e:
+        print(str(e))
+        print("TypeError Need reboot?")
+        # show red color & remind shutdown
+        LcdBadDevice.device_broken()
+        break
     finally:
         grovepi.digitalWrite(relay,0)

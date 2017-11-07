@@ -112,7 +112,11 @@ def getSensorData():
             sensordata["light"] = sensor_value
 
             # Calculate resistance of sensor in K
-            resistance = (float)(1023 - sensor_value) * 10 / sensor_value
+            if sensor_value!=0:
+                global resistance
+                resistance = (float)(1023 - sensor_value) * 10 / sensor_value
+            else:
+                resistance = 0
             
             '''
             if moisture < 10:
