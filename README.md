@@ -37,19 +37,23 @@ And then reboot the raspberry
 
 ### Input your credentials for authentication(ThinsShadowEcho.py)
 
-> endpoint = "XXXX.iot.XXXX.amazonaws.com" (BJS will be diff)
+``` python
 
-> rootCAPath = "cert/rootCA.cert"
+endpoint = "XXXX.iot.XXXX.amazonaws.com" (BJS will be diff)
 
-> certificatePath = "cert/certificate.pem"
+rootCAPath = "cert/rootCA.cert"
 
-> privateKeyPath = "cert/private.pem.key"
+certificatePath = "cert/certificate.pem"
 
-> thingName = "waterflower"
+privateKeyPath = "cert/private.pem.key"
+
+thingName = "waterflower"
 
 if your don't want to report error with wechat, you must set the **senderror.py** file:
     > reporter = true
     & change WECHAT_URL with https://sc.ftqq.com/3.version
+
+```
 
 ### Main function:
 
