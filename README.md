@@ -71,4 +71,8 @@ If the LCD show in red color, your must shutdown the raspberry(must be power off
 
 <img src="https://raw.githubusercontent.com/cncoder/water-iot/master/static/demo-web.jpg" height="800" alt="demo"/>
 
+### Create a web server on AWS EC2
+
+https://github.com/cncoder/MQTT-IoT-WebServer
+
 ### Licensed under the Apache License, Version 2.0 (the "License").
