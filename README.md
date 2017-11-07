@@ -1,6 +1,8 @@
 By connecting their devices to AWS IoT, users can securely work with the message broker, rules, and the device shadow (sometimes referred to as a thing shadow) provided by AWS IoT and with other AWS services like AWS Lambda, Amazon Kinesis, Amazon S3, and more.
 
-### prepare
+### Prepare
+
+You should be create resource on AWS console.
 
 #### Register a Device in the Thing Registry
 
