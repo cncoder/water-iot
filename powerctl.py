@@ -15,7 +15,7 @@
  */
  '''
 
-import grovepi
+# (just for Real environment) import grovepi
 import time
 
 def ctl(mosi,threshold):
@@ -25,13 +25,13 @@ def ctl(mosi,threshold):
 
     if mosi <= threshold:
         # switch on for 1 seconds
-        grovepi.digitalWrite(relay,1)
+        # (just for Real environment) grovepi.digitalWrite(relay,1)
         print ("on")
         time.sleep(1.5)
-        grovepi.digitalWrite(relay,0)
+        # (just for Real environment) grovepi.digitalWrite(relay,0)
         return 1
     else:
-        grovepi.digitalWrite(relay,0)
+        # (just for Real environment) grovepi.digitalWrite(relay,0)
         print ("off")
         time.sleep(1)
         return 0

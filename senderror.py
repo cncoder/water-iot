@@ -19,7 +19,7 @@ import requests
 import time
 def wechatreporter(text,desp):
     
-    reporter = false
+    reporter = true
     if reporter:
         WECHAT_URL = 'https://sc.ftqq.com/XXXXX.send'
         param  = {'text':text, 'desp':desp}

@@ -20,11 +20,19 @@ from AWSIoTPythonSDK.MQTTLib import AWSIoTMQTTShadowClient
 import logging
 import time
 import json
-import sensordata
-import grovepi
+# import sensordata
 import powerctl
+# Are you want to Mock data ?
+import mocksensordata
+
+'''
+/*
+* Please import package in Real environment
+*/
+import grovepi
 import setLcdinit
 import LcdBadDevice
+'''
 
 # Connect the Grove RELAY to analog port D6
 # SIG,NC,VCC,GND
@@ -33,6 +41,19 @@ relay = 6
 # relay status
 global status
 status = 0
+
+'''
+* To do list
+* Input your credentials for authentication
+'''
+endpoint = "XXXX.iot.us-west-2.amazonaws.com"
+rootCAPath = "cert/rootCA.cert"
+certificatePath = "cert/certificate.pem"
+privateKeyPath = "cert/private.pem.key"
+thingName = "waterflower"
+clientId = "myClientID"
+clientId2 = "sensorClientID"
+topic = "sensor/data"
 
 class shadowCallbackContainer:
 
@@ -69,17 +90,6 @@ def getShadowCallback(client, userdata, message):
     print(">>>>>>>>Received a new getShadowCallback message: ")
     print(userdata)
     print(message)
-
-# Input your credentials for authentication
-endpoint = "XXXXX.iot.XXXXX.amazonaws.com"
-rootCAPath = "cert/rootCA.cert"
-certificatePath = "cert/certificate.pem"
-privateKeyPath = "cert/private.pem.key"
-thingName = "waterflower"
-
-clientId = "myClientID"
-clientId2 = "sensorClientID"
-topic = "sensor/data"
 
 # Configure logging
 logger = logging.getLogger("AWSIoTPythonSDK.core")
@@ -167,12 +177,14 @@ while True:
         senData = {}
         senData["state"] = {}
         senData["state"]["reported"] = {}
-        tempData = sensordata.getSensorData()
+
+        # (just for Real environment) tempData = sensordata.getSensorData()
+        tempData = mocksensordata.getSensorData()
+
         senData["state"]["reported"]['mois'] = tempData['mois']
         senData["state"]["reported"]['temp'] = tempData['temp']
         senData["state"]["reported"]['light'] = tempData['light']
-        #print(">>>>>>>>>>")
-        #print(senData)
+
         #senData["state"]["reported"]["status"] = "off"
         print("class threshold >>>>"+str(shadowCallbackContainer.threshould))
         new_threshold = shadowCallbackContainer.threshould
@@ -184,6 +196,8 @@ while True:
             status = powerctl.ctl(senData["state"]["reported"]['mois'],30)
 
         senData["state"]["reported"]["status"] = status
+        print(">>>>>>>>>>")
+        print(senData)
         deviceShadowHandler.shadowUpdate(json.dumps(senData), customCallback, 5)
 
         myAWSIoTMQTTClient.publishAsync(topic, json.dumps(senData), 1, ackCallback=customPubackCallback)
@@ -198,7 +212,8 @@ while True:
         print(str(e))
         print("TypeError Need reboot?")
         # show red color & remind shutdown
-        LcdBadDevice.device_broken()
+        # (just for Real environment) LcdBadDevice.device_broken()
         break
     finally:
-        grovepi.digitalWrite(relay,0)
+        print ("finally process!")
+        # (just for Real environment) grovepi.digitalWrite(relay,0)
